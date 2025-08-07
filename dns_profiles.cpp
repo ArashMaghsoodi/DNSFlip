@@ -119,6 +119,8 @@ void manageDNSProfiles() {
         } else {
             // Show secondary menu
             while (true) {
+                clearScreen();
+                std::cout << "Selected Profile: " << profile["name"].get<std::string>() << "\n";
                 std::cout << "\n1. Set as Active\n2. Edit DNS Entry\n3. Delete DNS Entry\n0. Back\nChoice: ";
                 char subCh = _getch();
                 std::cout << subCh << "\n";
@@ -132,7 +134,7 @@ void manageDNSProfiles() {
                 }
                 if (subChoice == 2) {
                     std::string input;
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // <-- Add this line
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     std::cout << "Enter new DNS name (or press Enter to keep current: " << profile["name"] << "): ";
                     std::getline(std::cin, input);
                     if (!input.empty()) profile["name"] = input;
@@ -146,7 +148,11 @@ void manageDNSProfiles() {
                     if (!input.empty()) profile["secondary"] = input;
 
                     saveProfiles();
+                    clearScreen();
                     std::cout << "Profile updated.\n";
+                    std::cout << "Selected Profile: " << profile["name"].get<std::string>() << "\n";
+                    std::cout << "\n1. Set as Active\n2. Edit DNS Entry\n3. Delete DNS Entry\n0. Back\n";
+                    continue; // Show menu again
                 }
                 if (subChoice == 3) {
                     std::cout << "Are you sure you want to delete this DNS profile? (y/n): ";
