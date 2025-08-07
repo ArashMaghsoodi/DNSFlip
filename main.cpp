@@ -1,35 +1,47 @@
 #include <iostream>
-#include "ui.h"
-#include "utils.h"
-#include "dns_manager.h"
+#include "dns_profiles.hpp"
+#include "interface_config.hpp"
+#include "dns_commands.hpp"
+#include "utils.hpp"
 
 int main() {
-    SetConsoleEncodingUTF8();
-    ClearScreen();
-
-    PrintHeader();
+    loadProfiles();          // loads or creates dns_profiles.json
+    loadInterfaces();        // loads or creates interface.json
 
     while (true) {
-        PrintMenu();
-        char choice = GetSingleKey();
+        clearScreen();
+
+        std::cout << "=== DNSFlip ===\n";
+        std::cout << "1. Connect DNS (" << getSelectedProfileName() << ")\n";
+        std::cout << "2. Manage DNS IPs\n";
+        std::cout << "3. Manage Network Interface (" << getSelectedInterfaceName() << ")\n";
+        std::cout << "4. Reset to Automatic DNS\n";
+        std::cout << "0. Exit\n";
+        std::cout << "Choice: ";
+
+        int choice;
+        std::cin >> choice;
 
         switch (choice) {
-            case '1':
-                ToggleDNS();
+            case 1:
+                applySelectedDNS();
+                pauseAndContinue();
                 break;
-            case '2':
-                ResetDNS();
+            case 2:
+                manageDNSProfiles();
                 break;
-            case '0':
-                PrintWithColor("Exiting...\n", YELLOW);
+            case 3:
+                manageInterfaces();
+                break;
+            case 4:
+                resetDNS();
+                pauseAndContinue();
+                break;
+            case 0:
                 return 0;
             default:
-                PrintWithColor("Invalid option!\n", RED);
-                break;
+                std::cout << "Invalid choice.\n";
+                pauseAndContinue();
         }
-
-        PauseAndClear();
     }
-
-    return 0;
 }
