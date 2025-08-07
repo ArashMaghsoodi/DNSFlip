@@ -1,4 +1,5 @@
 #include <iostream>
+#include <conio.h>
 #include "dns_profiles.hpp"
 #include "interface_config.hpp"
 #include "dns_commands.hpp"
@@ -19,8 +20,9 @@ int main() {
         std::cout << "0. Exit\n";
         std::cout << "Choice: ";
 
-        int choice;
-        std::cin >> choice;
+        char ch = _getch();
+        std::cout << ch << "\n"; // Echo the pressed key
+        int choice = ch - '0';
 
         switch (choice) {
             case 1:
