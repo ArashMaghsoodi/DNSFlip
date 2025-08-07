@@ -78,7 +78,7 @@ void manageDNSProfiles() {
             const auto& p = profilesJson["profiles"][i];
             std::cout << (i + 1) << ". ";
             if (p.contains("name")) {
-                std::cout << p["name"];
+                std::cout << p["name"].get<std::string>();
                 if (i == profilesJson["selected"]) std::cout << " [Active]";
                 std::cout << "\n";
             } else {
@@ -114,9 +114,63 @@ void manageDNSProfiles() {
             profilesJson["selected"] = index;
             saveProfiles();
         } else {
-            // Mark as active
-            profilesJson["selected"] = index;
-            saveProfiles();
+            // Show secondary menu
+            while (true) {
+                std::cout << "\n1. Set as Active\n2. Edit DNS Entry\n3. Delete DNS Entry\n0. Back\nChoice: ";
+                int subChoice;
+                std::cin >> subChoice;
+                std::cin.ignore();
+
+                if (subChoice == 0) break;
+                if (subChoice == 1) {
+                    profilesJson["selected"] = index;
+                    saveProfiles();
+                    break;
+                }
+                if (subChoice == 2) {
+                    std::string input;
+                    std::cout << "Enter new DNS name (or press Enter to keep current: " << profile["name"] << "): ";
+                    std::getline(std::cin, input);
+                    if (!input.empty()) profile["name"] = input;
+
+                    std::cout << "Enter new primary DNS IP (or press Enter to keep current: " << profile["primary"] << "): ";
+                    std::getline(std::cin, input);
+                    if (!input.empty()) profile["primary"] = input;
+
+                    std::cout << "Enter new secondary DNS IP (or press Enter to keep current: " << profile["secondary"] << "): ";
+                    std::getline(std::cin, input);
+                    if (!input.empty()) profile["secondary"] = input;
+
+                    saveProfiles();
+                    std::cout << "Profile updated.\n";
+                }
+                if (subChoice == 3) {
+                    std::cout << "Are you sure you want to delete this DNS profile? (y/n): ";
+                    std::string confirm;
+                    std::getline(std::cin, confirm);
+                    if (!confirm.empty() && (confirm[0] == 'y' || confirm[0] == 'Y')) {
+                        bool wasSelected = (profilesJson["selected"] == index);
+                        profile = nlohmann::json::object(); // Clear profile
+
+                        // If deleted profile was selected, select first non-empty or 0
+                        if (wasSelected) {
+                            int newSel = 0;
+                            bool found = false;
+                            for (int i = 0; i < 9; ++i) {
+                                if (profilesJson["profiles"][i].contains("name")) {
+                                    newSel = i;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            profilesJson["selected"] = found ? newSel : 0;
+                        }
+                        saveProfiles();
+                        std::cout << "Profile deleted.\n";
+                        break;
+                    }
+                }
+            }
         }
     }
 }
