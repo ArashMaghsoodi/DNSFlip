@@ -6,6 +6,7 @@
 #include "dns_commands.hpp" // for setDNS
 #include "interface_config.hpp" // for getSelectedInterfaceName
 #include "utils.hpp"
+#include <conio.h> // Add this for _getch
 
 using json = nlohmann::json;
 
@@ -87,9 +88,9 @@ void manageDNSProfiles() {
         }
         std::cout << "0. Back\nChoice: ";
 
-        int choice;
-        std::cin >> choice;
-        std::cin.ignore();
+        char ch = _getch(); // Waits for a single key press
+        std::cout << ch << "\n"; // Echo the pressed key
+        int choice = ch - '0';
 
         if (choice == 0) break;
         if (choice < 1 || choice > 9) continue;
@@ -98,7 +99,7 @@ void manageDNSProfiles() {
         auto& profile = profilesJson["profiles"][index];
 
         if (!profile.contains("name")) {
-            // Add new profile
+            // Add new profile (still needs Enter for text fields)
             std::string name, primary, secondary;
             std::cout << "Enter DNS profile name: ";
             std::getline(std::cin, name);
@@ -117,9 +118,9 @@ void manageDNSProfiles() {
             // Show secondary menu
             while (true) {
                 std::cout << "\n1. Set as Active\n2. Edit DNS Entry\n3. Delete DNS Entry\n0. Back\nChoice: ";
-                int subChoice;
-                std::cin >> subChoice;
-                std::cin.ignore();
+                char subCh = _getch();
+                std::cout << subCh << "\n";
+                int subChoice = subCh - '0';
 
                 if (subChoice == 0) break;
                 if (subChoice == 1) {
