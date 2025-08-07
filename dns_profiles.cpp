@@ -7,6 +7,7 @@
 #include "interface_config.hpp" // for getSelectedInterfaceName
 #include "utils.hpp"
 #include <conio.h> // Add this for _getch
+#include <limits> // Add this at the top if not already present
 
 using json = nlohmann::json;
 
@@ -101,6 +102,7 @@ void manageDNSProfiles() {
         if (!profile.contains("name")) {
             // Add new profile (still needs Enter for text fields)
             std::string name, primary, secondary;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "Enter DNS profile name: ";
             std::getline(std::cin, name);
             std::cout << "Enter primary DNS IP: ";
@@ -130,6 +132,7 @@ void manageDNSProfiles() {
                 }
                 if (subChoice == 2) {
                     std::string input;
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // <-- Add this line
                     std::cout << "Enter new DNS name (or press Enter to keep current: " << profile["name"] << "): ";
                     std::getline(std::cin, input);
                     if (!input.empty()) profile["name"] = input;
