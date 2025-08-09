@@ -71,23 +71,34 @@ void applySelectedDNS() {
     std::cout << "DNS set to " << p["name"] << " for interface " << interface << ".\n";
 }
 
+// Add color macros if not already present
+#ifndef COLOR_RESET
+#define COLOR_RESET   "\033[0m"
+#define COLOR_GREY    "\033[90m"
+#define COLOR_CYAN    "\033[36m"
+#define COLOR_BWHITE  "\033[97m"
+#define COLOR_YELLOW  "\033[33m"
+#define COLOR_GREEN   "\033[32m"
+#define COLOR_RED     "\033[31m"
+#endif
+
 void manageDNSProfiles() {
     while (true) {
         clearScreen();
-        std::cout << "== Manage DNS Profiles ==\n";
+        std::cout << COLOR_CYAN << "== Manage DNS Profiles ==\n" << COLOR_RESET;
 
         for (int i = 0; i < 9; ++i) {
             const auto& p = profilesJson["profiles"][i];
-            std::cout << (i + 1) << ". ";
+            std::cout << COLOR_GREEN << (i + 1) << "." << COLOR_RESET << " ";
             if (p.contains("name")) {
-                std::cout << p["name"].get<std::string>();
-                if (i == profilesJson["selected"]) std::cout << " [Active]";
+                std::cout << COLOR_BWHITE << p["name"].get<std::string>() << COLOR_GREY;
+                if (i == profilesJson["selected"]) std::cout << COLOR_YELLOW << " [Active]" << COLOR_RESET;
                 std::cout << "\n";
             } else {
                 std::cout << "Empty\n";
             }
         }
-        std::cout << "0. Back\nChoice: ";
+        std::cout << COLOR_RED << "0." << COLOR_RESET << " Back\nChoice: ";
 
         char ch = _getch(); // Waits for a single key press
         std::cout << ch << "\n"; // Echo the pressed key
@@ -103,11 +114,11 @@ void manageDNSProfiles() {
             // Add new profile (still needs Enter for text fields)
             std::string name, primary, secondary;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Enter DNS profile name: ";
+            std::cout << COLOR_CYAN << "Enter DNS profile name: " << COLOR_RESET;
             std::getline(std::cin, name);
-            std::cout << "Enter primary DNS IP: ";
+            std::cout << COLOR_CYAN << "Enter primary DNS IP: " << COLOR_RESET;
             std::getline(std::cin, primary);
-            std::cout << "Enter secondary DNS IP: ";
+            std::cout << COLOR_CYAN << "Enter secondary DNS IP: " << COLOR_RESET;
             std::getline(std::cin, secondary);
 
             profile["name"] = name;
@@ -120,8 +131,11 @@ void manageDNSProfiles() {
             // Show secondary menu
             while (true) {
                 clearScreen();
-                std::cout << "Selected Profile: " << profile["name"].get<std::string>() << "\n";
-                std::cout << "\n1. Set as Active\n2. Edit DNS Entry\n3. Delete DNS Entry\n0. Back\nChoice: ";
+                std::cout << COLOR_CYAN << "Selected Profile: " << COLOR_BWHITE << profile["name"].get<std::string>() << COLOR_RESET << "\n";
+                std::cout << COLOR_GREEN << "1." << COLOR_RESET << " Set as Active\n";
+                std::cout << COLOR_GREEN << "2." << COLOR_RESET << " Edit DNS Entry\n";
+                std::cout << COLOR_GREEN << "3." << COLOR_RESET << " Delete DNS Entry\n";
+                std::cout << COLOR_RED << "0." << COLOR_RESET << " Back\nChoice: ";
                 char subCh = _getch();
                 std::cout << subCh << "\n";
                 int subChoice = subCh - '0';
@@ -135,27 +149,30 @@ void manageDNSProfiles() {
                 if (subChoice == 2) {
                     std::string input;
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    std::cout << "Enter new DNS name (or press Enter to keep current: " << profile["name"] << "): ";
+                    std::cout << COLOR_CYAN << "Enter new DNS name (or press Enter to keep current: " << COLOR_BWHITE << profile["name"] << COLOR_CYAN << "): " << COLOR_RESET;
                     std::getline(std::cin, input);
                     if (!input.empty()) profile["name"] = input;
 
-                    std::cout << "Enter new primary DNS IP (or press Enter to keep current: " << profile["primary"] << "): ";
+                    std::cout << COLOR_CYAN << "Enter new primary DNS IP (or press Enter to keep current: " << COLOR_BWHITE << profile["primary"] << COLOR_CYAN << "): " << COLOR_RESET;
                     std::getline(std::cin, input);
                     if (!input.empty()) profile["primary"] = input;
 
-                    std::cout << "Enter new secondary DNS IP (or press Enter to keep current: " << profile["secondary"] << "): ";
+                    std::cout << COLOR_CYAN << "Enter new secondary DNS IP (or press Enter to keep current: " << COLOR_BWHITE << profile["secondary"] << COLOR_CYAN << "): " << COLOR_RESET;
                     std::getline(std::cin, input);
                     if (!input.empty()) profile["secondary"] = input;
 
                     saveProfiles();
                     clearScreen();
-                    std::cout << "Profile updated.\n";
-                    std::cout << "Selected Profile: " << profile["name"].get<std::string>() << "\n";
-                    std::cout << "\n1. Set as Active\n2. Edit DNS Entry\n3. Delete DNS Entry\n0. Back\n";
+                    std::cout << COLOR_GREEN << "Profile updated.\n" << COLOR_RESET;
+                    std::cout << COLOR_CYAN << "Selected Profile: " << COLOR_BWHITE << profile["name"].get<std::string>() << COLOR_RESET << "\n";
+                    std::cout << COLOR_GREEN << "1." << COLOR_RESET << " Set as Active\n";
+                    std::cout << COLOR_GREEN << "2." << COLOR_RESET << " Edit DNS Entry\n";
+                    std::cout << COLOR_GREEN << "3." << COLOR_RESET << " Delete DNS Entry\n";
+                    std::cout << COLOR_RED << "0." << COLOR_RESET << " Back\n";
                     continue; // Show menu again
                 }
                 if (subChoice == 3) {
-                    std::cout << "Are you sure you want to delete this DNS profile? (y/n): ";
+                    std::cout << COLOR_YELLOW << "Are you sure you want to delete this DNS profile? (y/n): " << COLOR_RESET;
                     std::string confirm;
                     std::getline(std::cin, confirm);
                     if (!confirm.empty() && (confirm[0] == 'y' || confirm[0] == 'Y')) {
@@ -176,7 +193,7 @@ void manageDNSProfiles() {
                             profilesJson["selected"] = found ? newSel : 0;
                         }
                         saveProfiles();
-                        std::cout << "Profile deleted.\n";
+                        std::cout << COLOR_GREEN << "Profile deleted.\n" << COLOR_RESET;
                         break;
                     }
                 }
