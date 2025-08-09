@@ -5,7 +5,6 @@
 #include "dns_commands.hpp"
 #include "utils.hpp"
 
-// Windows color codes
 #define COLOR_RESET   "\033[0m"
 #define COLOR_CYAN    "\033[36m"
 #define COLOR_BWHITE  "\033[97m"
@@ -14,8 +13,8 @@
 #define COLOR_RED     "\033[31m"
 
 int main() {
-    loadProfiles();          // loads or creates dns_profiles.json
-    loadInterfaces();        // loads or creates interface.json
+    loadProfiles();
+    loadInterfaces();
 
     while (true) {
         clearScreen();
@@ -30,7 +29,7 @@ int main() {
         std::cout << "Choice: ";
 
         char ch = _getch();
-        std::cout << ch << "\n"; // Echo the pressed key
+        std::cout << ch << "\n";
         int choice = ch - '0';
 
         switch (choice) {

@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <algorithm>
-#include <conio.h> // Add this at the top with other includes
+#include <conio.h>
 
 #ifndef COLOR_RESET
 #define COLOR_RESET   "\033[0m"
@@ -22,14 +22,12 @@
 static std::string selectedInterfaceName = "None";
 const std::string INTERFACE_FILE = "interface.json";
 
-// Helper to trim whitespace
 static std::string trim(const std::string& s) {
     size_t start = s.find_first_not_of(" \t\r\n");
     size_t end = s.find_last_not_of(" \t\r\n");
     return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
 }
 
-// List interfaces using ipconfig and parse output
 static std::vector<std::string> listInterfaces() {
     std::vector<std::string> interfaces;
     FILE* pipe = _popen("ipconfig /all", "r");
@@ -39,7 +37,6 @@ static std::vector<std::string> listInterfaces() {
     std::string currentLine;
     while (fgets(buffer, sizeof(buffer), pipe)) {
         currentLine = buffer;
-        // Look for lines like "Ethernet adapter Ethernet:"
         auto pos = currentLine.find("adapter ");
         if (pos != std::string::npos) {
             auto colon = currentLine.find(':', pos);
@@ -86,7 +83,7 @@ void manageInterfaces() {
         std::cout << COLOR_RED << "0. " << COLOR_RESET << "Back\n";
         std::cout << "Select interface (1-" << interfaces.size() << "), or 0 to return: ";
         char ch = _getch();
-        std::cout << ch << "\n"; // Echo the pressed key
+        std::cout << ch << "\n";
         size_t choice = ch - '0';
         if (choice == 0) {
             break;

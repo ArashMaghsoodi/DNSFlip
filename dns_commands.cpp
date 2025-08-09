@@ -5,7 +5,7 @@
 #include <string>
 
 void setDNS(const std::string& interface, const std::string& primary, const std::string& secondary) {
-    // Set primary DNS
+
     std::string cmd1 = "netsh interface ip set dns name=\"" + interface + "\" static " + primary + " primary";
     int result1 = system(cmd1.c_str());
     if (result1 != 0) {
@@ -13,7 +13,6 @@ void setDNS(const std::string& interface, const std::string& primary, const std:
         return;
     }
 
-    // Set secondary DNS
     if (!secondary.empty()) {
         std::string cmd2 = "netsh interface ip add dns name=\"" + interface + "\" " + secondary + " index=2";
         int result2 = system(cmd2.c_str());

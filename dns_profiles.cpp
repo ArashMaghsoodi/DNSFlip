@@ -3,11 +3,11 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "dns_commands.hpp" // for setDNS
-#include "interface_config.hpp" // for getSelectedInterfaceName
+#include "dns_commands.hpp"
+#include "interface_config.hpp"
 #include "utils.hpp"
-#include <conio.h> // Add this for _getch
-#include <limits> // Add this at the top if not already present
+#include <conio.h>
+#include <limits>
 
 using json = nlohmann::json;
 
@@ -43,7 +43,6 @@ void loadProfiles() {
             }) }
         };
 
-        // Fill to 9 entries
         while (profilesJson["profiles"].size() < 9)
             profilesJson["profiles"].push_back({});
         saveProfiles();
@@ -71,7 +70,6 @@ void applySelectedDNS() {
     std::cout << "DNS set to " << p["name"] << " for interface " << interface << ".\n";
 }
 
-// Add color macros if not already present
 #ifndef COLOR_RESET
 #define COLOR_RESET   "\033[0m"
 #define COLOR_GREY    "\033[90m"
@@ -100,8 +98,8 @@ void manageDNSProfiles() {
         }
         std::cout << COLOR_RED << "0." << COLOR_RESET << " Back\nChoice: ";
 
-        char ch = _getch(); // Waits for a single key press
-        std::cout << ch << "\n"; // Echo the pressed key
+        char ch = _getch();
+        std::cout << ch << "\n";
         int choice = ch - '0';
 
         if (choice == 0) break;
@@ -111,7 +109,6 @@ void manageDNSProfiles() {
         auto& profile = profilesJson["profiles"][index];
 
         if (!profile.contains("name")) {
-            // Add new profile (still needs Enter for text fields)
             std::string name, primary, secondary;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << COLOR_CYAN << "Enter DNS profile name: " << COLOR_RESET;
@@ -128,7 +125,6 @@ void manageDNSProfiles() {
             profilesJson["selected"] = index;
             saveProfiles();
         } else {
-            // Show secondary menu
             while (true) {
                 clearScreen();
                 std::cout << COLOR_CYAN << "Selected Profile: " << COLOR_BWHITE << profile["name"].get<std::string>() << COLOR_RESET << "\n";
@@ -169,7 +165,7 @@ void manageDNSProfiles() {
                     std::cout << COLOR_GREEN << "2." << COLOR_RESET << " Edit DNS Entry\n";
                     std::cout << COLOR_GREEN << "3." << COLOR_RESET << " Delete DNS Entry\n";
                     std::cout << COLOR_RED << "0." << COLOR_RESET << " Back\n";
-                    continue; // Show menu again
+                    continue;
                 }
                 if (subChoice == 3) {
                     std::cout << COLOR_YELLOW << "Are you sure you want to delete this DNS profile? (y/n): " << COLOR_RESET;
@@ -177,9 +173,8 @@ void manageDNSProfiles() {
                     std::getline(std::cin, confirm);
                     if (!confirm.empty() && (confirm[0] == 'y' || confirm[0] == 'Y')) {
                         bool wasSelected = (profilesJson["selected"] == index);
-                        profile = nlohmann::json::object(); // Clear profile
+                        profile = nlohmann::json::object();
 
-                        // If deleted profile was selected, select first non-empty or 0
                         if (wasSelected) {
                             int newSel = 0;
                             bool found = false;
